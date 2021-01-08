@@ -3,9 +3,9 @@ using System;
 
 var source = new Source
 {
-	Id = Guid.NewGuid(),
-	Name = "Jeff",
-	When = DateTime.Now,
+  Id = Guid.NewGuid(),
+  Name = "Jeff",
+  When = DateTime.Now,
 };
 
 var destination = source.MapToDestination();

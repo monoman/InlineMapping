@@ -11,14 +11,14 @@ Console.Out.WriteLine(destination.When);
 [MapTo(typeof(Destination))]
 public class Source
 {
-	public Guid Id { get; set; }
-	public string? Name { get; set; }
-	public DateTime When { get; set; }
+  public Guid Id { get; set; }
+  public string? Name { get; set; }
+  public DateTime When { get; set; }
 }
 
 public class Destination
 {
-	public Guid Id { get; set; }
-	public string? Name { get; set; }
-	public DateTime When { get; set; }
+  public Guid Id { get; set; }
+  public string? Name { get; set; }
+  public DateTime When { get; set; }
 }

@@ -1,11 +1,11 @@
 root = true
 
 [*]
-end_of_line = crlf
+end_of_line = lf
 
 [*.cs]
-indent_style = tab
-indent_size = 3
+indent_style = space
+indent_size = 2
 csharp_style_conditional_delegate_call = true:error
 csharp_style_expression_bodied_accessors = true:error
 csharp_style_expression_bodied_constructors = true:error

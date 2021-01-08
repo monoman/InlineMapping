@@ -1,7 +1,7 @@
 ﻿namespace InlineMapping.Configuration
 {
-  public enum IndentStyle
+  public enum EolStyle
   {
-    Tab, Space
+    LF, CR, CRLF
   }
 }

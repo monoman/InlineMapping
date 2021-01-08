@@ -1,98 +1,96 @@
 ﻿using InlineMapping.Configuration;
 using Microsoft.CodeAnalysis.Text;
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 namespace InlineMapping
 {
-	internal sealed class MappingBuilder
-	{
-		public MappingBuilder(MappingInformation information, ConfigurationValues configurationValues) => 
-			this.Text = MappingBuilder.Build(information, configurationValues);
+  internal sealed class MappingBuilder
+  {
+    public MappingBuilder(MappingInformation information, ConfigurationValues configurationValues) =>
+        this.Text = MappingBuilder.Build(information, configurationValues);
 
-		private static SourceText Build(MappingInformation information, ConfigurationValues configurationValues)
-		{
-			using var writer = new StringWriter();
-			using var indentWriter = new IndentedTextWriter(writer, 
-				configurationValues.IndentStyle == IndentStyle.Tab ? "\t" : new string(' ', (int)configurationValues.IndentSize));
+    public SourceText Text { get; private set; }
 
-			var usingStatements = new SortedSet<string>();
+    private static SourceText Build(MappingInformation information, ConfigurationValues configurationValues)
+    {
+      using var writer = new StringWriter();
+      var indentWriter = configurationValues.BuildIndentedTextWriter(writer);
 
-			if (!information.SourceType.IsValueType)
-			{
-				usingStatements.Add("using System;");
-			};
+      var usingStatements = new SortedSet<string>();
 
-			if (!information.DestinationType.ContainingNamespace.IsGlobalNamespace &&
-				!information.SourceType.ContainingNamespace.ToDisplayString().StartsWith(
-					information.DestinationType.ContainingNamespace.ToDisplayString(), StringComparison.InvariantCulture))
-			{
-				usingStatements.Add($"using {information.DestinationType.ContainingNamespace.ToDisplayString()};");
-			}
+      if (!information.SourceType.IsValueType)
+      {
+        usingStatements.Add("using System;");
+      };
 
-			foreach (var usingStatement in usingStatements)
-			{
-				indentWriter.WriteLine(usingStatement);
-			}
+      if (!information.DestinationType.ContainingNamespace.IsGlobalNamespace &&
+          !information.SourceType.ContainingNamespace.ToDisplayString().StartsWith(
+              information.DestinationType.ContainingNamespace.ToDisplayString(), StringComparison.InvariantCulture))
+      {
+        usingStatements.Add($"using {information.DestinationType.ContainingNamespace.ToDisplayString()};");
+      }
 
-			if (usingStatements.Count > 0)
-			{
-				indentWriter.WriteLine();
-			}
+      foreach (var usingStatement in usingStatements)
+      {
+        indentWriter.WriteLine(usingStatement);
+      }
 
-			if (!information.SourceType.ContainingNamespace.IsGlobalNamespace)
-			{
-				indentWriter.WriteLine($"namespace {information.SourceType.ContainingNamespace.ToDisplayString()}");
-				indentWriter.WriteLine("{");
-				indentWriter.Indent++;
-			}
+      if (usingStatements.Count > 0)
+      {
+        indentWriter.WriteLine();
+      }
 
-			indentWriter.WriteLine($"public static partial class {information.SourceType.Name}MapToExtensions");
-			indentWriter.WriteLine("{");
-			indentWriter.Indent++;
+      if (!information.SourceType.ContainingNamespace.IsGlobalNamespace)
+      {
+        indentWriter.WriteLine($"namespace {information.SourceType.ContainingNamespace.ToDisplayString()}");
+        indentWriter.WriteLine("{");
+        indentWriter.Indent++;
+      }
 
-			indentWriter.WriteLine($"public static {information.DestinationType.Name} MapTo{information.DestinationType.Name}(this {information.SourceType.Name} self) =>");
-			indentWriter.Indent++;
+      indentWriter.WriteLine($"public static partial class {information.SourceType.Name}MapToExtensions");
+      indentWriter.WriteLine("{");
+      indentWriter.Indent++;
 
-			if (!information.SourceType.IsValueType)
-			{
-				indentWriter.WriteLine("self is null ? throw new ArgumentNullException(nameof(self)) :");
-				indentWriter.Indent++;
-			}
+      indentWriter.WriteLine($"public static {information.DestinationType.Name} MapTo{information.DestinationType.Name}(this {information.SourceType.Name} self) =>");
+      indentWriter.Indent++;
 
-			indentWriter.WriteLine($"new {information.DestinationType.Name}");
-			indentWriter.WriteLine("{");
-			indentWriter.Indent++;
+      if (!information.SourceType.IsValueType)
+      {
+        indentWriter.WriteLine("self is null ? throw new ArgumentNullException(nameof(self)) :");
+        indentWriter.Indent++;
+      }
 
-			foreach (var map in information.Maps)
-			{
-				indentWriter.WriteLine(map);
-			}
+      indentWriter.WriteLine($"new {information.DestinationType.Name}");
+      indentWriter.WriteLine("{");
+      indentWriter.Indent++;
 
-			indentWriter.Indent--;
-			indentWriter.WriteLine("};");
+      foreach (var map in information.Maps)
+      {
+        indentWriter.WriteLine(map);
+      }
 
-			if (!information.SourceType.IsValueType)
-			{
-				indentWriter.Indent--;
-			}
+      indentWriter.Indent--;
+      indentWriter.WriteLine("};");
 
-			indentWriter.Indent--;
-			indentWriter.Indent--;
-			indentWriter.WriteLine("}");
+      if (!information.SourceType.IsValueType)
+      {
+        indentWriter.Indent--;
+      }
 
-			if (!information.SourceType.ContainingNamespace.IsGlobalNamespace)
-			{
-				indentWriter.Indent--;
-				indentWriter.WriteLine("}");
-			}
+      indentWriter.Indent--;
+      indentWriter.Indent--;
+      indentWriter.WriteLine("}");
 
-			return SourceText.From(writer.ToString(), Encoding.UTF8);
-		}
+      if (!information.SourceType.ContainingNamespace.IsGlobalNamespace)
+      {
+        indentWriter.Indent--;
+        indentWriter.WriteLine("}");
+      }
 
-		public SourceText Text { get; private set; }
-	}
+      return SourceText.From(writer.ToString(), Encoding.UTF8);
+    }
+  }
 }
