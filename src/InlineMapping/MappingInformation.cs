@@ -1,4 +1,4 @@
-﻿using InlineMapping.Descriptors;
+using InlineMapping.Descriptors;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Globalization;

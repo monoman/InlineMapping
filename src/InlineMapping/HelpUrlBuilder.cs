@@ -1,4 +1,4 @@
-﻿namespace InlineMapping
+namespace InlineMapping
 {
   internal static class HelpUrlBuilder
   {

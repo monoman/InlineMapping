@@ -1,4 +1,4 @@
-﻿using InlineMapping.Configuration;
+using InlineMapping.Configuration;
 using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;

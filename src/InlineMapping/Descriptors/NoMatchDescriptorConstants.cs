@@ -1,4 +1,4 @@
-﻿namespace InlineMapping.Descriptors
+namespace InlineMapping.Descriptors
 {
   public static class NoMatchDescriptorConstants
   {
